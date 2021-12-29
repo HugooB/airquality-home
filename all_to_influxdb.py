@@ -136,7 +136,7 @@ try:
 
             # After a warm up period, report the temperature from the sensor
             if iterations >= 6:
-                reading['bme280.temperature'] = bme280.get_temperature() - 2.3
+                reading['bme280.temperature'] = bme280.get_temperature() - 2.4
             reading['bme280.pressure'] = bme280.get_pressure()
             reading['bme280.humidity'] = bme280.get_humidity()
 
