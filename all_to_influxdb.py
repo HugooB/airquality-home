@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python3
 
-"""Send data using the InfluxDB client."""
+"""Measure air quality and store data in InfluxDB."""
 
 from time import sleep
 from sys import exit
@@ -47,28 +47,6 @@ bme280 = BME280()
 # PMS5003 particle matter sensor
 pms5003 = PMS5003()
 
-# Create ST7735 LCD display class
-st7735 = ST7735.ST7735(
-    port=0,
-    cs=1,
-    dc=9,
-    backlight=12,
-    rotation=270,
-    spi_speed_hz=10000000
-)
-
-# Initialize display.
-st7735.begin()
-
-# Initialize display
-WIDTH = st7735.width
-HEIGHT = st7735.height
-
-# Set up canvas and font
-img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
-draw = ImageDraw.Draw(img)
-top_pos = 25
-
 # Set up InfluxDB
 influx = InfluxDBClient(host=config['influxdb']['host'],
                         username=config['influxdb']['username'],
@@ -94,23 +72,47 @@ influx_data = [
         }
     ]
 
-# Setup the screen and show "monitoring"
-font_size = 25
-font = ImageFont.truetype(UserFont, font_size)
-text_colour = (255, 255, 255)
-back_colour = (0, 170, 170)
+# If you want to display something on the LCD screen, show it
+if config['enviro']['display'] == "True":
+    # Create ST7735 LCD display class
+    st7735 = ST7735.ST7735(
+        port=0,
+        cs=1,
+        dc=9,
+        backlight=12,
+        rotation=270,
+        spi_speed_hz=10000000
+    )
 
-message = "Monitoring!"
-size_x, size_y = draw.textsize(message, font)
+    # Initialize display.
+    st7735.begin()
 
-# Calculate text position
-x = (WIDTH - size_x) / 2
-y = (HEIGHT / 2) - (size_y / 2)
+    # Initialize display
+    WIDTH = st7735.width
+    HEIGHT = st7735.height
 
-# Draw background rectangle and write text.
-draw.rectangle((0, 0, 160, 80), back_colour)
-draw.text((x, y), message, font=font, fill=text_colour)
-st7735.display(img)
+    # Set up canvas and font
+    img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    top_pos = 25
+
+    # Setup the screen and show "monitoring"
+    font_size = 25
+    font = ImageFont.truetype(UserFont, font_size)
+    text_colour = (255, 255, 255)
+    back_colour = (0, 170, 170)
+
+    message = "Monitoring!"
+    size_x, size_y = draw.textsize(message, font)
+
+    # Calculate text position
+    x = (WIDTH - size_x) / 2
+    y = (HEIGHT / 2) - (size_y / 2)
+
+    # Draw background rectangle and write text.
+    draw.rectangle((0, 0, 160, 80), back_colour)
+    draw.text((x, y), message, font=font, fill=text_colour)
+    st7735.display(img)
 
 # The main loop
 try:
@@ -134,15 +136,15 @@ try:
 
             # After a warm up period, report the temperature from the sensor
             if iterations >= 6:
-                reading['bme280.temperature'] = bme280.get_temperature() - 2.2
+                reading['bme280.temperature'] = bme280.get_temperature() - 2.3
             reading['bme280.pressure'] = bme280.get_pressure()
             reading['bme280.humidity'] = bme280.get_humidity()
 
-            # Get gas sensor readings
+            # Get gas sensor readings and convert to kOhm
             gas_data = gas.read_all()
-            reading['mics6814.oxidising'] = gas_data.oxidising
-            reading['mics6814.reducing'] = gas_data.reducing
-            reading['mics6814.nh3'] = gas_data.nh3
+            reading['mics6814.oxidising'] = gas_data.oxidising / 1000.0
+            reading['mics6814.reducing'] = gas_data.reducing / 1000.0
+            reading['mics6814.nh3'] = gas_data.nh3 / 1000.0
 
             # Get particle matter sensor readings
             particle_data = pms5003.read()
