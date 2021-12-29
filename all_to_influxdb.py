@@ -3,15 +3,16 @@
 
 """Send data using the InfluxDB client."""
 
-import time
-import colorsys
-import os
-import sys
-import socket
+from time import sleep
+from sys import exit
+from subprocess import PIPE, Popen
 import configparser
 import logging
 
 import ST7735
+from bme280 import BME280
+from pms5003 import PMS5003, ReadTimeoutError
+from enviroplus import gas
 
 try:
     # Transitional fix for breaking change in LTR559
@@ -20,24 +21,12 @@ try:
 except ImportError:
     import ltr559
 
-from bme280 import BME280
-from pms5003 import PMS5003, ReadTimeoutError
-from enviroplus import gas
-
-from subprocess import PIPE, Popen
-
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
+from PIL import Image, ImageDraw, ImageFont
 from fonts.ttf import RobotoMedium as UserFont
 
 from influxdb import InfluxDBClient
 
-# Get the temperature of the CPU for compensation
-def get_cpu_temperature():
-    with open("/sys/class/thermal/thermal_zone0/temp", "r") as f:
-        return int(f.read()) / 1000.0
-
+# Initialize logging
 logging.basicConfig(
     format='%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s',
     level=logging.INFO,
@@ -48,6 +37,9 @@ logging.info("Started monitoring process..")
 # Load the configuration file
 config = configparser.ConfigParser()
 config.read('config.ini')
+
+# Retrieve the measurement interval
+INTERVAL = int(config['enviro']['interval'])
 
 # BME280 temperature/pressure/humidity sensor
 bme280 = BME280()
@@ -82,6 +74,14 @@ influx = InfluxDBClient(host=config['influxdb']['host'],
                         username=config['influxdb']['username'],
                         password=config['influxdb']['password'],
                         database=config['influxdb']['database'])
+
+# Test if InfluxDB instance running and accepting connections
+try:
+    influx.ping()
+    logging.info("Succesfully connected to InfluxDB!")
+except Exception as error:
+    logging.error(f"No connection to InfluxDB at {config['influxdb']['host']}, exiting..")
+    exit(1)
 
 # Create the influxDB data object to store data
 influx_data = [
@@ -123,9 +123,6 @@ try:
             # Get data from the proximity sensor
             proximity = ltr559.get_proximity()
 
-            # Compensated Temperature
-            cpu_temp = get_cpu_temperature()
-
             # Fill the readings dictionary
             reading['ltr559.proximity'] = proximity
 
@@ -152,7 +149,6 @@ try:
             reading['pms5003.pm1'] = particle_data.pm_ug_per_m3(1.0)
             reading['pms5003.pm25'] = particle_data.pm_ug_per_m3(2.5)
             reading['pms5003.pm10'] = particle_data.pm_ug_per_m3(10.0)
-
             reading['pms5003.03um'] = particle_data.pm_per_1l_air(0.3)
             reading['pms5003.05um'] = particle_data.pm_per_1l_air(0.5)
             reading['pms5003.10um'] = particle_data.pm_per_1l_air(1.0)
@@ -160,19 +156,26 @@ try:
             reading['pms5003.50um'] = particle_data.pm_per_1l_air(5)
             reading['pms5003.100um'] = particle_data.pm_per_1l_air(10)
 
+            if iterations == 6:
+                logging.info("Warmup period over, sending all measurements to InfluxDB now")
+
             if iterations >= 3:
                 influx_data[0]["fields"] = reading
-                logging.debug("Write points: {0}".format(influx_data))
+                logging.debug(f"Write points: {influx_data}")
                 influx.write_points(influx_data)
             else:
-                logging.warning("Skip iteration: " + str(iterations))
+                logging.warning(f"Skip iteration: {iterations}")
 
-            time.sleep(10)
+            # Sleep for a moment to wait for the next measurement
+            sleep(INTERVAL)
             iterations += 1
+        
+        # Catch measurement errors
         except Exception as error:
             logging.error(f"Measurement error: {error}")
 
 # Exit cleanly
 except KeyboardInterrupt:
     logging.info("Received CTRL+C interrupt, exiting!")
-    sys.exit(0)
+    influx.close()
+    exit(0)
