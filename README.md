@@ -26,7 +26,7 @@ https://learn.pimoroni.com/article/getting-started-with-enviro-plus
 2. Add the following line to the file:
 
 ```bash
-@reboot python3 /home/pi/all_to_influxdb.py
+@reboot python3 /home/pi/all_to_influxdb.py > /home/pi/measurement_logs.txt
 ```
 
 3. Save and exit by typing `CTRL+X` and `Y`. 

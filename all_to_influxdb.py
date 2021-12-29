@@ -47,6 +47,10 @@ bme280 = BME280()
 # PMS5003 particle matter sensor
 pms5003 = PMS5003()
 
+# Now wait a while..
+logging.info("Waiting 20s to make sure that InfluxDB and Grafana are ready for data..")
+sleep(20)
+
 # Set up InfluxDB
 influx = InfluxDBClient(host=config['influxdb']['host'],
                         username=config['influxdb']['username'],
