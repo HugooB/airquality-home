@@ -6,6 +6,7 @@
 from time import sleep
 from sys import exit
 from subprocess import PIPE, Popen
+from pathlib import Path
 import configparser
 import logging
 
@@ -36,7 +37,7 @@ logging.info("Started monitoring process..")
 
 # Load the configuration file
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read(f'{Path(__file__).parent.absolute()}/config.ini')
 
 # Retrieve the measurement interval
 INTERVAL = int(config['enviro']['interval'])
