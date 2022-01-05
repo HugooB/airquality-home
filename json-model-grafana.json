@@ -43,15 +43,15 @@
               },
               {
                 "color": "orange",
+                "value": 15
+              },
+              {
+                "color": "dark-orange",
                 "value": 30
               },
               {
-                "color": "red",
-                "value": 40
-              },
-              {
-                "color": "dark-red",
-                "value": 50
+                "color": "semi-dark-red",
+                "value": 55
               }
             ]
           },
@@ -65,7 +65,7 @@
         "x": 0,
         "y": 0
       },
-      "id": 2,
+      "id": 20,
       "options": {
         "orientation": "auto",
         "reduceOptions": {
@@ -122,7 +122,7 @@
           "tags": []
         }
       ],
-      "title": "PM1 particles",
+      "title": "PM1.0 particles",
       "type": "gauge"
     },
     {
@@ -226,14 +226,13 @@
       "type": "gauge"
     },
     {
-      "description": "dust, pollen, mould spores",
+      "description": "combustion particles, organic compounds, metals",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
           "mappings": [],
-          "max": 0,
           "min": 0,
           "thresholds": {
             "mode": "absolute",
@@ -244,15 +243,15 @@
               },
               {
                 "color": "orange",
-                "value": 25
+                "value": 15
               },
               {
                 "color": "dark-orange",
-                "value": 50
+                "value": 30
               },
               {
                 "color": "semi-dark-red",
-                "value": 90
+                "value": 55
               }
             ]
           },
@@ -266,7 +265,7 @@
         "x": 8,
         "y": 0
       },
-      "id": 5,
+      "id": 21,
       "options": {
         "orientation": "auto",
         "reduceOptions": {
@@ -310,7 +309,7 @@
             [
               {
                 "params": [
-                  "pms5003.pm10"
+                  "pms5003.pm25"
                 ],
                 "type": "field"
               },
@@ -323,7 +322,7 @@
           "tags": []
         }
       ],
-      "title": "PM10 particles",
+      "title": "PM10.0 particles",
       "type": "gauge"
     },
     {
@@ -682,7 +681,7 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
+        "w": 8,
         "x": 0,
         "y": 6
       },
@@ -871,6 +870,216 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 15
+              },
+              {
+                "color": "semi-dark-orange",
+                "value": 30
+              },
+              {
+                "color": "semi-dark-red",
+                "value": 50
+              }
+            ]
+          },
+          "unit": "conμgm3"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 6
+      },
+      "id": 22,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "alias": "PM1.0",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "wXgdlWRRz"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "10s"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "none"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "enviroplus",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "pms5003.pm1"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": []
+        },
+        {
+          "alias": "PM10",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "wXgdlWRRz"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "10s"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "none"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": false,
+          "measurement": "enviroplus",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "B",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "pms5003.pm10"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": []
+        },
+        {
+          "alias": "PM2.5",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "wXgdlWRRz"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "10s"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "none"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": false,
+          "measurement": "enviroplus",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "C",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "pms5003.pm25"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "title": "Historical particle matters readings",
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 57,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "stepBefore",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -880,8 +1089,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 12,
+        "w": 8,
+        "x": 16,
         "y": 6
       },
       "id": 14,
@@ -1061,7 +1270,7 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 8,
+        "w": 4,
         "x": 0,
         "y": 14
       },
@@ -1123,6 +1332,94 @@
         }
       ],
       "title": "Temperature",
+      "type": "gauge"
+    },
+    {
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "lux"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 4,
+        "x": 4,
+        "y": 14
+      },
+      "id": 19,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "text": {}
+      },
+      "pluginVersion": "8.3.3",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "wXgdlWRRz"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "10s"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "enviroplus",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "ltr559.lux"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "title": "Light",
       "type": "gauge"
     },
     {
@@ -1206,6 +1503,7 @@
       },
       "targets": [
         {
+          "alias": "Temperature",
           "datasource": {
             "type": "influxdb",
             "uid": "wXgdlWRRz"
@@ -1331,6 +1629,7 @@
       },
       "targets": [
         {
+          "alias": "Humidity",
           "datasource": {
             "type": "influxdb",
             "uid": "wXgdlWRRz"
@@ -1456,6 +1755,7 @@
       },
       "targets": [
         {
+          "alias": "Pressure",
           "datasource": {
             "type": "influxdb",
             "uid": "wXgdlWRRz"
@@ -1581,6 +1881,7 @@
       },
       "targets": [
         {
+          "alias": "Light",
           "datasource": {
             "type": "influxdb",
             "uid": "wXgdlWRRz"
@@ -1634,13 +1935,13 @@
     "list": []
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-7d",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Inside Air Quality",
   "uid": "aUPRh4ggz",
-  "version": 9,
+  "version": 12,
   "weekStart": ""
 }
