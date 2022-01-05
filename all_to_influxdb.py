@@ -12,7 +12,7 @@ import logging
 
 import ST7735
 from bme280 import BME280
-from pms5003 import PMS5003, ReadTimeoutError
+from pms5003 import PMS5003, ReadTimeoutError, ChecksumMismatchError, SerialTimeoutError
 from enviroplus import gas
 
 try:
@@ -137,7 +137,7 @@ try:
 
             # After a warm up period, report the temperature from the sensor
             if iterations >= 6:
-                reading['bme280.temperature'] = bme280.get_temperature() - 2.4
+                reading['bme280.temperature'] = bme280.get_temperature() - 2.3
             reading['bme280.pressure'] = bme280.get_pressure()
             reading['bme280.humidity'] = bme280.get_humidity()
 
@@ -168,14 +168,19 @@ try:
                 influx.write_points(influx_data)
             else:
                 logging.warning(f"Skip iteration: {iterations}")
-
-            # Sleep for a moment to wait for the next measurement
-            sleep(INTERVAL)
-            iterations += 1
         
-        # Catch measurement errors
+        # Catch PMS5003 errors
+        except (ReadTimeoutError, ChecksumMismatchError, SerialTimeoutError) as error:
+            logging.error(f"PMS5003 error: {error}, resetting sensor connection..")
+            pms5003 = PMS5003()
+
+        # Catch all other errors
         except Exception as error:
             logging.error(f"Measurement error: {error}")
+
+        # Sleep for a moment to wait for the next measurement
+        sleep(INTERVAL)
+        iterations += 1
 
 # Exit cleanly
 except KeyboardInterrupt:
