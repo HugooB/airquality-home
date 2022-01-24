@@ -309,7 +309,7 @@
             [
               {
                 "params": [
-                  "pms5003.pm25"
+                  "pms5003.pm10"
                 ],
                 "type": "field"
               },
