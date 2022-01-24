@@ -33,14 +33,14 @@ logging.basicConfig(
     level=logging.INFO,
     datefmt='%Y-%m-%d %H:%M:%S')
 
-logging.info("Started monitoring process..")
-
 # Load the configuration file
 config = configparser.ConfigParser()
 config.read(f'{Path(__file__).parent.absolute()}/config.ini')
 
 # Retrieve the measurement interval
 INTERVAL = int(config['enviro']['interval'])
+
+logging.info(f"Started monitoring process. Measuring every {INTERVAL} seconds")
 
 # BME280 temperature/pressure/humidity sensor
 bme280 = BME280()
@@ -137,7 +137,7 @@ try:
 
             # After a warm up period, report the temperature from the sensor
             if iterations >= 6:
-                reading['bme280.temperature'] = bme280.get_temperature() - 2.3
+                reading['bme280.temperature'] = bme280.get_temperature() - 3.2
             reading['bme280.pressure'] = bme280.get_pressure()
             reading['bme280.humidity'] = bme280.get_humidity()
 
@@ -172,7 +172,7 @@ try:
         # Catch PMS5003 errors
         except (ReadTimeoutError, ChecksumMismatchError, SerialTimeoutError) as error:
             logging.error(f"PMS5003 error: {error}, resetting sensor connection..")
-            pms5003 = PMS5003()
+            pms5003.reset()
 
         # Catch all other errors
         except Exception as error:
