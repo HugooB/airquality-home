@@ -3,7 +3,10 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -26,6 +29,10 @@
   "liveNow": false,
   "panels": [
     {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "wXgdlWRRz"
+      },
       "description": "ultrafine particles",
       "fieldConfig": {
         "defaults": {
@@ -79,7 +86,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.3.3",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "datasource": {
@@ -126,6 +133,10 @@
       "type": "gauge"
     },
     {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "wXgdlWRRz"
+      },
       "description": "combustion particles, organic compounds, metals",
       "fieldConfig": {
         "defaults": {
@@ -179,7 +190,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.3.3",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "datasource": {
@@ -226,7 +237,11 @@
       "type": "gauge"
     },
     {
-      "description": "combustion particles, organic compounds, metals",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "wXgdlWRRz"
+      },
+      "description": "dust, pollen, mould spores",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -279,7 +294,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.3.3",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "datasource": {
@@ -326,6 +341,10 @@
       "type": "gauge"
     },
     {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "wXgdlWRRz"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -379,7 +398,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.3.3",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "datasource": {
@@ -426,6 +445,10 @@
       "type": "gauge"
     },
     {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "wXgdlWRRz"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -443,15 +466,15 @@
               },
               {
                 "color": "orange",
-                "value": 200
+                "value": 250
               },
               {
                 "color": "dark-red",
-                "value": 300
+                "value": 400
               },
               {
                 "color": "red",
-                "value": 400
+                "value": 500
               }
             ]
           },
@@ -479,7 +502,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.3.3",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "datasource": {
@@ -522,10 +545,14 @@
           "tags": []
         }
       ],
-      "title": "Carbon Monoxide",
+      "title": "Carbon Monoxide (Koolstofmonoxide)",
       "type": "gauge"
     },
     {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "wXgdlWRRz"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -579,7 +606,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.3.3",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "datasource": {
@@ -626,6 +653,10 @@
       "type": "gauge"
     },
     {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "wXgdlWRRz"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -693,7 +724,8 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "multi"
+          "mode": "multi",
+          "sort": "none"
         }
       },
       "targets": [
@@ -827,6 +859,10 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "wXgdlWRRz"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -903,7 +939,8 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "multi"
+          "mode": "multi",
+          "sort": "none"
         }
       },
       "targets": [
@@ -1037,6 +1074,10 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "wXgdlWRRz"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1101,7 +1142,8 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "multi"
+          "mode": "multi",
+          "sort": "none"
         }
       },
       "targets": [
@@ -1235,6 +1277,10 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "wXgdlWRRz"
+      },
       "description": "inside temperature",
       "fieldConfig": {
         "defaults": {
@@ -1288,7 +1334,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.3.3",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "datasource": {
@@ -1335,6 +1381,10 @@
       "type": "gauge"
     },
     {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "wXgdlWRRz"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1376,7 +1426,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.3.3",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
           "datasource": {
@@ -1423,6 +1473,10 @@
       "type": "gauge"
     },
     {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "wXgdlWRRz"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1498,7 +1552,8 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "targets": [
@@ -1549,6 +1604,10 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "wXgdlWRRz"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1624,7 +1683,8 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "targets": [
@@ -1675,6 +1735,10 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "wXgdlWRRz"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1750,7 +1814,8 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "targets": [
@@ -1801,6 +1866,10 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "wXgdlWRRz"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1876,7 +1945,8 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "targets": [
@@ -1928,20 +1998,20 @@
     }
   ],
   "refresh": "30s",
-  "schemaVersion": 34,
+  "schemaVersion": 36,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-7d",
+    "from": "now-12h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Inside Air Quality",
   "uid": "aUPRh4ggz",
-  "version": 12,
+  "version": 15,
   "weekStart": ""
 }
