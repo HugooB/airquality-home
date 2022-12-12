@@ -57,7 +57,7 @@ influx = InfluxDBClient(host=config['influxdb']['host'],
 # Test if InfluxDB instance running and accepting connections
 try:
     influx.ping()
-    logging.info("Succesfully connected to InfluxDB!")
+    logging.info("Successfully connected to InfluxDB!")
 except Exception as error:
     logging.error(f"No connection to InfluxDB at {config['influxdb']['host']}, exiting..")
     exit(1)
@@ -137,7 +137,7 @@ try:
 
             # After a warm up period, report the temperature from the sensor
             if iterations >= 6:
-                reading['bme280.temperature'] = bme280.get_temperature() - 3.2
+                reading['bme280.temperature'] = bme280.get_temperature() - 2.5
             reading['bme280.pressure'] = bme280.get_pressure()
             reading['bme280.humidity'] = bme280.get_humidity()
 
