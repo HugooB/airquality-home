@@ -1,4 +1,4 @@
-Pillow==9.3.0
+Pillow==9.4.0
 influxdb==5.3.1
 font-roboto==0.0.1
 fonts==0.0.3
