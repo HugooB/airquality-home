@@ -86,7 +86,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.5.2",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
           "datasource": {
@@ -190,7 +190,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.5.2",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
           "datasource": {
@@ -294,7 +294,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.5.2",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
           "datasource": {
@@ -362,15 +362,15 @@
               },
               {
                 "color": "orange",
-                "value": 200
+                "value": 125
               },
               {
                 "color": "dark-red",
-                "value": 300
+                "value": 150
               },
               {
                 "color": "red",
-                "value": 400
+                "value": 180
               }
             ]
           },
@@ -398,7 +398,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.5.2",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
           "datasource": {
@@ -466,11 +466,11 @@
               },
               {
                 "color": "orange",
-                "value": 250
+                "value": 300
               },
               {
                 "color": "dark-red",
-                "value": 400
+                "value": 450
               },
               {
                 "color": "red",
@@ -502,7 +502,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.5.2",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
           "datasource": {
@@ -570,15 +570,15 @@
               },
               {
                 "color": "orange",
-                "value": 200
+                "value": 125
               },
               {
                 "color": "dark-red",
-                "value": 300
+                "value": 150
               },
               {
                 "color": "red",
-                "value": 400
+                "value": 180
               }
             ]
           },
@@ -606,7 +606,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.5.2",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
           "datasource": {
@@ -663,6 +663,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -721,7 +723,8 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "multi",
@@ -869,6 +872,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -936,7 +941,8 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "multi",
@@ -1084,6 +1090,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1139,7 +1147,8 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "multi",
@@ -1298,11 +1307,11 @@
               },
               {
                 "color": "#EAB839",
-                "value": 22
+                "value": 21
               },
               {
                 "color": "orange",
-                "value": 24
+                "value": 23
               },
               {
                 "color": "red",
@@ -1334,7 +1343,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.5.2",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
           "datasource": {
@@ -1426,7 +1435,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.5.2",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
           "datasource": {
@@ -1484,6 +1493,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1548,8 +1559,9 @@
       "options": {
         "legend": {
           "calcs": [],
-          "displayMode": "hidden",
-          "placement": "bottom"
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
         },
         "tooltip": {
           "mode": "single",
@@ -1615,6 +1627,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1679,8 +1693,9 @@
       "options": {
         "legend": {
           "calcs": [],
-          "displayMode": "hidden",
-          "placement": "bottom"
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
         },
         "tooltip": {
           "mode": "single",
@@ -1746,6 +1761,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1810,8 +1827,9 @@
       "options": {
         "legend": {
           "calcs": [],
-          "displayMode": "hidden",
-          "placement": "bottom"
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
         },
         "tooltip": {
           "mode": "single",
@@ -1877,6 +1895,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1941,8 +1961,9 @@
       "options": {
         "legend": {
           "calcs": [],
-          "displayMode": "hidden",
-          "placement": "bottom"
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
         },
         "tooltip": {
           "mode": "single",
@@ -1998,7 +2019,7 @@
     }
   ],
   "refresh": "30s",
-  "schemaVersion": 36,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -2012,6 +2033,6 @@
   "timezone": "",
   "title": "Inside Air Quality",
   "uid": "aUPRh4ggz",
-  "version": 15,
+  "version": 17,
   "weekStart": ""
 }
