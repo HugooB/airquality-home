@@ -3,42 +3,45 @@
 
 """Measure air quality and store data in InfluxDB."""
 
-from time import sleep
-from sys import exit
-from subprocess import PIPE, Popen
-from pathlib import Path
 import configparser
 import logging
+from math import pow
+from pathlib import Path
+from subprocess import PIPE, Popen
+from sys import exit
+from time import sleep
 
 import ST7735
 from bme280 import BME280
-from pms5003 import PMS5003, ReadTimeoutError, ChecksumMismatchError, SerialTimeoutError
 from enviroplus import gas
+from pms5003 import PMS5003, ChecksumMismatchError, ReadTimeoutError, SerialTimeoutError
 
+# Transitional fix for breaking change in LTR559
 try:
-    # Transitional fix for breaking change in LTR559
+
     from ltr559 import LTR559
+
     ltr559 = LTR559()
 except ImportError:
     import ltr559
 
-from PIL import Image, ImageDraw, ImageFont
 from fonts.ttf import RobotoMedium as UserFont
-
 from influxdb import InfluxDBClient
+from PIL import Image, ImageDraw, ImageFont
 
 # Initialize logging
 logging.basicConfig(
-    format='%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s',
+    format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s",
     level=logging.INFO,
-    datefmt='%Y-%m-%d %H:%M:%S')
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 
 # Load the configuration file
 config = configparser.ConfigParser()
-config.read(f'{Path(__file__).parent.absolute()}/config.ini')
+config.read(f"{Path(__file__).parent.absolute()}/config.ini")
 
 # Retrieve the measurement interval
-INTERVAL = int(config['enviro']['interval'])
+INTERVAL = int(config["enviro"]["interval"])
 
 logging.info(f"Started monitoring process. Measuring every {INTERVAL} seconds")
 
@@ -49,40 +52,37 @@ bme280 = BME280()
 pms5003 = PMS5003()
 
 # Set up InfluxDB
-influx = InfluxDBClient(host=config['influxdb']['host'],
-                        username=config['influxdb']['username'],
-                        password=config['influxdb']['password'],
-                        database=config['influxdb']['database'])
+influx = InfluxDBClient(
+    host=config["influxdb"]["host"],
+    username=config["influxdb"]["username"],
+    password=config["influxdb"]["password"],
+    database=config["influxdb"]["database"],
+)
 
 # Test if InfluxDB instance running and accepting connections
 try:
     influx.ping()
     logging.info("Successfully connected to InfluxDB!")
 except Exception as error:
-    logging.error(f"No connection to InfluxDB at {config['influxdb']['host']}, exiting..")
+    logging.error(
+        f"No connection to InfluxDB at {config['influxdb']['host']}, exiting.."
+    )
     exit(1)
 
 # Create the influxDB data object to store data
 influx_data = [
-        {
-            "measurement": config['influxdb']['measurement'],
-            "tags": {
-                "host": "enviroplus"
-            },
-            "fields": { }
-        }
-    ]
+    {
+        "measurement": config["influxdb"]["measurement"],
+        "tags": {"host": "enviroplus"},
+        "fields": {},
+    }
+]
 
 # If you want to display something on the LCD screen, show it
-if config['enviro']['display'] == "True":
+if config["enviro"]["display"] == "True":
     # Create ST7735 LCD display class
     st7735 = ST7735.ST7735(
-        port=0,
-        cs=1,
-        dc=9,
-        backlight=12,
-        rotation=270,
-        spi_speed_hz=10000000
+        port=0, cs=1, dc=9, backlight=12, rotation=270, spi_speed_hz=10000000
     )
 
     # Initialize display.
@@ -93,7 +93,7 @@ if config['enviro']['display'] == "True":
     HEIGHT = st7735.height
 
     # Set up canvas and font
-    img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
+    img = Image.new("RGB", (WIDTH, HEIGHT), color=(0, 0, 0))
     draw = ImageDraw.Draw(img)
     top_pos = 25
 
@@ -127,40 +127,50 @@ try:
             proximity = ltr559.get_proximity()
 
             # Fill the readings dictionary
-            reading['ltr559.proximity'] = proximity
+            reading["ltr559.proximity"] = proximity
 
             # If something is close to the proximity sensor, return just 1.0
             if proximity < 10:
-                reading['ltr559.lux'] = ltr559.get_lux()
+                reading["ltr559.lux"] = ltr559.get_lux()
             else:
-                reading['ltr559.lux'] = 1.0
+                reading["ltr559.lux"] = 1.0
 
             # After a warm up period, report the temperature from the sensor
             if iterations >= 6:
-                reading['bme280.temperature'] = bme280.get_temperature() - 2.5
-            reading['bme280.pressure'] = bme280.get_pressure()
-            reading['bme280.humidity'] = bme280.get_humidity()
+                # From calibration with another temperature sensor, we know
+                # that this sensor should be calibrated with the following formula
+                # real_temperature = -7.670998 + 2.593528*BME280 - 0.06046548*BME280^2
+                bme280_temp = bme280.get_temperature()
+                reading["bme280.temperature"] = (
+                    -7.670998
+                    + (2.593528 * bme280_temp)
+                    - (0.06046548 * pow(bme280_temp, 2))
+                )
+            reading["bme280.pressure"] = bme280.get_pressure()
+            reading["bme280.humidity"] = bme280.get_humidity()
 
             # Get gas sensor readings and convert to kOhm
             gas_data = gas.read_all()
-            reading['mics6814.oxidising'] = gas_data.oxidising / 1000.0
-            reading['mics6814.reducing'] = gas_data.reducing / 1000.0
-            reading['mics6814.nh3'] = gas_data.nh3 / 1000.0
+            reading["mics6814.oxidising"] = gas_data.oxidising / 1000.0
+            reading["mics6814.reducing"] = gas_data.reducing / 1000.0
+            reading["mics6814.nh3"] = gas_data.nh3 / 1000.0
 
             # Get particle matter sensor readings
             particle_data = pms5003.read()
-            reading['pms5003.pm1'] = particle_data.pm_ug_per_m3(1.0)
-            reading['pms5003.pm25'] = particle_data.pm_ug_per_m3(2.5)
-            reading['pms5003.pm10'] = particle_data.pm_ug_per_m3(10.0)
-            reading['pms5003.03um'] = particle_data.pm_per_1l_air(0.3)
-            reading['pms5003.05um'] = particle_data.pm_per_1l_air(0.5)
-            reading['pms5003.10um'] = particle_data.pm_per_1l_air(1.0)
-            reading['pms5003.25um'] = particle_data.pm_per_1l_air(2.5)
-            reading['pms5003.50um'] = particle_data.pm_per_1l_air(5)
-            reading['pms5003.100um'] = particle_data.pm_per_1l_air(10)
+            reading["pms5003.pm1"] = particle_data.pm_ug_per_m3(1.0)
+            reading["pms5003.pm25"] = particle_data.pm_ug_per_m3(2.5)
+            reading["pms5003.pm10"] = particle_data.pm_ug_per_m3(10.0)
+            reading["pms5003.03um"] = particle_data.pm_per_1l_air(0.3)
+            reading["pms5003.05um"] = particle_data.pm_per_1l_air(0.5)
+            reading["pms5003.10um"] = particle_data.pm_per_1l_air(1.0)
+            reading["pms5003.25um"] = particle_data.pm_per_1l_air(2.5)
+            reading["pms5003.50um"] = particle_data.pm_per_1l_air(5)
+            reading["pms5003.100um"] = particle_data.pm_per_1l_air(10)
 
             if iterations == 6:
-                logging.info("Warmup period over, sending all measurements to InfluxDB now")
+                logging.info(
+                    "Warmup period over, sending all measurements to InfluxDB now"
+                )
 
             if iterations >= 3:
                 influx_data[0]["fields"] = reading
@@ -168,7 +178,7 @@ try:
                 influx.write_points(influx_data)
             else:
                 logging.warning(f"Skip iteration: {iterations}")
-        
+
         # Catch PMS5003 errors
         except (ReadTimeoutError, ChecksumMismatchError, SerialTimeoutError) as error:
             logging.error(f"PMS5003 error: {error}, resetting sensor connection..")
