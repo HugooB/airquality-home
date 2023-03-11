@@ -115,85 +115,90 @@ if config["enviro"]["display"] == "True":
     draw.text((x, y), message, font=font, fill=text_colour)
     st7735.display(img)
 
+def calibrate_temperature(reading):
+    """
+    From calibration with another temperature sensor, we know
+    that this sensor should be calibrated with the following formula
+    WRONG: real_temperature = -7.670998 + 2.593528*BME280 - 0.06046548*BME280^2
+    Measurement: 21.9 --> real temperature: 19.1 = 1.147x
+    """
+    # adjusted = -7.670998 + (2.593528 * reading) - (0.06046548 * pow(reading, 2))  
+    adjusted = reading / 1.147
+    return adjusted
+
 # The main loop
-try:
-    iterations = 0
-    while True:
-        try:
-            # Initialize a data point - reading from all sensors
-            reading = {}
+if __name__ == "__main__":
+    try:
+        iterations = 0
+        while True:
+            try:
+                # Initialize a data point - reading from all sensors
+                reading = {}
 
-            # Get data from the proximity sensor
-            proximity = ltr559.get_proximity()
+                # Get data from the proximity sensor
+                proximity = ltr559.get_proximity()
 
-            # Fill the readings dictionary
-            reading["ltr559.proximity"] = proximity
+                # Fill the readings dictionary
+                reading["ltr559.proximity"] = proximity
 
-            # If something is close to the proximity sensor, return just 1.0
-            if proximity < 10:
-                reading["ltr559.lux"] = ltr559.get_lux()
-            else:
-                reading["ltr559.lux"] = 1.0
+                # If something is close to the proximity sensor, return just 1.0
+                if proximity < 10:
+                    reading["ltr559.lux"] = ltr559.get_lux()
+                else:
+                    reading["ltr559.lux"] = 1.0
 
-            # After a warm up period, report the temperature from the sensor
-            if iterations >= 6:
-                # From calibration with another temperature sensor, we know
-                # that this sensor should be calibrated with the following formula
-                # real_temperature = -7.670998 + 2.593528*BME280 - 0.06046548*BME280^2
-                bme280_temp = bme280.get_temperature()
-                reading["bme280.temperature"] = (
-                    -7.670998
-                    + (2.593528 * bme280_temp)
-                    - (0.06046548 * pow(bme280_temp, 2))
-                )
-            reading["bme280.pressure"] = bme280.get_pressure()
-            reading["bme280.humidity"] = bme280.get_humidity()
+                # After a warm up period, report the temperature from the sensor
+                if iterations >= 6:
+                    reading["bme280.temperature"] = calibrate_temperature(bme280.get_temperature())
+                    
+                reading["bme280.pressure"] = bme280.get_pressure()
+                reading["bme280.humidity"] = bme280.get_humidity()
 
-            # Get gas sensor readings and convert to kOhm
-            gas_data = gas.read_all()
-            reading["mics6814.oxidising"] = gas_data.oxidising / 1000.0
-            reading["mics6814.reducing"] = gas_data.reducing / 1000.0
-            reading["mics6814.nh3"] = gas_data.nh3 / 1000.0
+                # Get gas sensor readings and convert to kOhm
+                gas_data = gas.read_all()
+                reading["mics6814.oxidising"] = gas_data.oxidising / 1000.0
+                reading["mics6814.reducing"] = gas_data.reducing / 1000.0
+                reading["mics6814.nh3"] = gas_data.nh3 / 1000.0
 
-            # Get particle matter sensor readings
-            particle_data = pms5003.read()
-            reading["pms5003.pm1"] = particle_data.pm_ug_per_m3(1.0)
-            reading["pms5003.pm25"] = particle_data.pm_ug_per_m3(2.5)
-            reading["pms5003.pm10"] = particle_data.pm_ug_per_m3(10.0)
-            reading["pms5003.03um"] = particle_data.pm_per_1l_air(0.3)
-            reading["pms5003.05um"] = particle_data.pm_per_1l_air(0.5)
-            reading["pms5003.10um"] = particle_data.pm_per_1l_air(1.0)
-            reading["pms5003.25um"] = particle_data.pm_per_1l_air(2.5)
-            reading["pms5003.50um"] = particle_data.pm_per_1l_air(5)
-            reading["pms5003.100um"] = particle_data.pm_per_1l_air(10)
+                # Get particle matter sensor readings
+                particle_data = pms5003.read()
+                reading["pms5003.pm1"] = particle_data.pm_ug_per_m3(1.0)
+                reading["pms5003.pm25"] = particle_data.pm_ug_per_m3(2.5)
+                reading["pms5003.pm10"] = particle_data.pm_ug_per_m3(10.0)
+                reading["pms5003.03um"] = particle_data.pm_per_1l_air(0.3)
+                reading["pms5003.05um"] = particle_data.pm_per_1l_air(0.5)
+                reading["pms5003.10um"] = particle_data.pm_per_1l_air(1.0)
+                reading["pms5003.25um"] = particle_data.pm_per_1l_air(2.5)
+                reading["pms5003.50um"] = particle_data.pm_per_1l_air(5)
+                reading["pms5003.100um"] = particle_data.pm_per_1l_air(10)
 
-            if iterations == 6:
-                logging.info(
-                    "Warmup period over, sending all measurements to InfluxDB now"
-                )
+                if iterations == 6:
+                    logging.info(
+                        "Warmup period over, sending all measurements to InfluxDB now"
+                    )
 
-            if iterations >= 3:
-                influx_data[0]["fields"] = reading
-                logging.debug(f"Write points: {influx_data}")
-                influx.write_points(influx_data)
-            else:
-                logging.warning(f"Skip iteration: {iterations}")
+                if iterations >= 3:
+                    influx_data[0]["fields"] = reading
+                    logging.debug(f"Write points: {influx_data}")
+                    influx.write_points(influx_data)
+                else:
+                    logging.warning(f"Skip iteration: {iterations}")
 
-        # Catch PMS5003 errors
-        except (ReadTimeoutError, ChecksumMismatchError, SerialTimeoutError) as error:
-            logging.error(f"PMS5003 error: {error}, resetting sensor connection..")
-            pms5003.reset()
+            # Catch PMS5003 errors
+            except (ReadTimeoutError, ChecksumMismatchError, SerialTimeoutError) as error:
+                logging.error(f"PMS5003 error: {error}, resetting sensor connection..")
+                pms5003.reset()
 
-        # Catch all other errors
-        except Exception as error:
-            logging.error(f"Measurement error: {error}")
+            # Catch all other errors
+            except Exception as error:
+                logging.error(f"Measurement error: {error}")
 
-        # Sleep for a moment to wait for the next measurement
-        sleep(INTERVAL)
-        iterations += 1
+            # Sleep for a moment to wait for the next measurement
+            sleep(INTERVAL)
+            iterations += 1
 
-# Exit cleanly
-except KeyboardInterrupt:
-    logging.info("Received CTRL+C interrupt, exiting!")
-    influx.close()
-    exit(0)
+    # Exit cleanly
+    except KeyboardInterrupt:
+        logging.info("Received CTRL+C interrupt, exiting!")
+        influx.close()
+        exit(0)
